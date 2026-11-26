@@ -13,12 +13,11 @@ for visitors, and caches the answers. Each month's issue is a single NYT call, w
 
 ## Deploy (dashboard, no terminal) — about 10 minutes
 1. Sign up free at https://dash.cloudflare.com.
-2. Workers & Pages → Create → Create Worker → name it `the-shelf` → Deploy.
+2. Workers & Pages → Create → Create Worker → name it `nytbooks` → Deploy.
 3. Edit code → select all → paste the whole contents of `worker.js` → Deploy.
 4. Back on the Worker: Settings → Variables and Secrets → Add → type **Secret**, name `NYT_KEY`, value = your NYT key → Deploy.
-5. (Recommended) Storage & Databases → KV → Create namespace `SHELF_CACHE`. Then on the Worker: Settings → Bindings → Add → KV namespace,
-   variable name `SHELF_CACHE`, pick the namespace → Deploy. This makes the cache shared by all visitors.
-6. Open `https://the-shelf.<your-subdomain>.workers.dev`. Share that link.
+5. KV cache: already set up (namespace `SHELF_CACHE`, bound in `wrangler.toml`).
+6. Open `https://nytbooks.<your-subdomain>.workers.dev`. Share that link.
 
 ## Deploy (terminal)
     npm i -g wrangler

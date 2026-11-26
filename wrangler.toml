@@ -1,10 +1,8 @@
-name = "the-shelf"
+name = "nytbooks"
 main = "worker.js"
 compatibility_date = "2026-11-01"
 
-# Optional shared cache across all visitors. Create it with:
-#   npx wrangler kv namespace create SHELF_CACHE
-# then paste the id it prints below and uncomment.
-# [[kv_namespaces]]
-# binding = "SHELF_CACHE"
-# id = "paste-id-here"
+# Shared cache for NYT answers, used by every visitor.
+[[kv_namespaces]]
+binding = "SHELF_CACHE"
+id = "8e86ebf55e81431fa1fdfb9994675b2c"
