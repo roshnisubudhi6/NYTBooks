@@ -16,7 +16,7 @@ const ROUTES = {
 const PARAMS = ['published_date', 'author', 'title', 'isbn', 'offset'];
 const memory = new Map();
 // Sites allowed to call this API from the browser (the page on workers.dev needs no entry).
-const ALLOWED_ORIGINS = ['https://nytbook.roshnisubudhi.com', 'https://roshnisubudhi6.github.io'];
+const ALLOWED_ORIGINS = ['https://nytbook.roshnisubudhi.com', 'http://nytbook.roshnisubudhi.com', 'https://roshnisubudhi6.github.io'];
 let cors = {};
 
 const json = (body, status, ttl) => new Response(body, {
