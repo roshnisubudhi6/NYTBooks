@@ -1,0 +1,10 @@
+name = "the-shelf"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+# Optional shared cache across all visitors. Create it with:
+#   npx wrangler kv namespace create SHELF_CACHE
+# then paste the id it prints below and uncomment.
+# [[kv_namespaces]]
+# binding = "SHELF_CACHE"
+# id = "paste-id-here"
