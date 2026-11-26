@@ -21,6 +21,7 @@ html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ivory);font:17px/1.5 "Old Standard TT",Georgia,serif;overflow-x:clip}
 body::before{content:"";position:fixed;inset:0;background:var(--grain);opacity:.18;pointer-events:none;z-index:0}
 .bar,.stage{position:relative;z-index:1}
+.bar{z-index:10}
 .bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;padding:14px max(3vw,14px) 10px;border-bottom:3px double #f6efdc40}
 .brand{font:400 28px/1 "Abril Fatface",Georgia,serif;white-space:nowrap}
 .brand small{font:400 13px "Special Elite",monospace;opacity:.7;margin-left:10px}
@@ -57,9 +58,12 @@ button.primary{background:var(--mustard)!important;border-color:var(--mustard)!i
 .book.closed{transform:translateX(-25%)}.book.ended{transform:translateX(25%)}
 .leaf{position:absolute;top:0;left:50%;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.1,.2,1)}
 .leaf.flipped{transform:rotateY(-180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper);color:var(--ink);container-type:size;box-shadow:0 6px 22px #00000080;cursor:pointer}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper);color:var(--ink);container-type:size;cursor:pointer}
+.leaf.top .face{box-shadow:0 6px 22px #00000080}
+.pager{display:contents}
 .face::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.1;mix-blend-mode:multiply;pointer-events:none;z-index:3}
 .back{transform:rotateY(180deg)}
+.leaf.flipped>.front,.leaf:not(.flipped)>.back{pointer-events:none}
 .front::after,.back::after{content:"";position:absolute;top:0;bottom:0;width:9%;pointer-events:none;z-index:4}
 .front::after{left:0;background:linear-gradient(90deg,#0000001f,#0000)}
 .back::after{right:0;background:linear-gradient(270deg,#0000001f,#0000)}
@@ -145,7 +149,8 @@ img.broken{visibility:hidden}
 
 .sform{display:flex;flex-wrap:wrap;gap:1.6cqw;margin-bottom:3cqw}
 .sform input{flex:1 1 50%;min-height:40px;padding:0 10px;border:2px solid var(--ink);border-radius:0;background:#fff;color:var(--ink);font:16px "Special Elite",monospace}
-.pill{display:inline-flex!important;align-items:center;min-height:40px;padding:0 16px!important;background:var(--ink);color:var(--ivory);font:max(12px,2.2cqw) "Special Elite",monospace!important;box-shadow:.7cqw .7cqw 0 var(--accent)}
+.pg .pill{display:inline-flex;align-items:center;min-height:44px;padding:3px 16px 0;background:var(--ink);color:var(--ivory);font:max(13px,2.2cqw) "Special Elite",monospace;box-shadow:.7cqw .7cqw 0 var(--accent);cursor:pointer}
+.pg .pill:hover{background:#000}
 .results{flex:1;min-height:0;overflow:auto;cursor:auto;padding-right:1cqw}
 .results h5{font:400 3.4cqw/1.1 "Abril Fatface",serif;color:var(--accent);margin:2cqw 0 1cqw}
 .results ul{list-style:none;margin:0;padding:0}
@@ -157,10 +162,53 @@ img.broken{visibility:hidden}
 .backc::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,#e2a72e40 26%,transparent 30%) 0 0/1.8cqw 1.8cqw;-webkit-mask:linear-gradient(20deg,#000,#0000 60%);mask:linear-gradient(20deg,#000,#0000 60%);pointer-events:none}
 .backc>*{position:relative;z-index:1}
 .backc .big{font:400 14cqw/.9 "Abril Fatface",serif;color:var(--mustard)}
-.backc .pill{background:var(--mustard);color:var(--ink);box-shadow:.7cqw .7cqw 0 var(--accent)}
+.pg.backc .pill{background:var(--mustard);color:var(--ink);box-shadow:.7cqw .7cqw 0 var(--accent)}
 .backc p{max-width:80%;font-size:max(11px,2.6cqw)}
+/* phones and portrait tablets: one page at a time, filling the screen, with thumb-reach navigation */
+@media (max-width:760px),(orientation:portrait) and (max-width:1100px){
+  .bar{padding:10px 12px 10px;gap:8px 12px;justify-content:space-between}
+  .brand{font-size:24px}
+  .controls{flex:1 1 300px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto;gap:8px}
+  .bar select{width:100%}
+  .pager{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#121212f2;border-top:3px double #f6efdc40;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .pager button{width:100%;min-height:48px}
+  #where{min-width:0;font-size:13px}
+  .stage{min-height:0;place-items:start center;padding:12px 0 calc(84px + env(safe-area-inset-bottom))}
+  .book.single{aspect-ratio:auto;touch-action:pan-y}
+  .single .pg{font-size:max(14px,2.6cqw);padding:6cqw 6.5cqw 11cqw}
+  .single .run{font-size:11px;gap:2cqw}
+  .single .run span:last-child{display:none}
+  .single .folio{font-size:11px}
+  .single .pg-h{font-size:max(26px,7cqw)}
+  .single .deck{font-size:max(15px,3cqw)}
+  .single .kicker{font-size:12px}
+  .single .desc{font-size:max(15px,2.9cqw);-webkit-line-clamp:14}
+  .single .stats dt{font-size:11px}.single .stats dd{font-size:max(13px,2.6cqw)}
+  .single .rest-h{font-size:max(20px,4.8cqw)}
+  .single .rows h4{font-size:max(15px,3.3cqw)}
+  .single .rows .by{font-size:12.5px}
+  .single .rows .d{font-size:13px}
+  .single .meta,.single .note{font-size:11px}
+  .single .rows.compact .d{display:none}
+  .single .toc{columns:1}.single .toc button{font-size:15px;padding:2.4cqw 0}.single .toc b{font-size:13px}
+  .single .api li{grid-template-columns:1fr;gap:.6cqw;padding:1.8cqw 0}
+  .single .api code{font-size:11.5px}.single .api p{font-size:13.5px}
+  .single .box{font-size:13px}
+  .single .cl span,.single .dateline,.single .cov-foot{font-size:11px}
+  .single .cl b{font-size:max(15px,3.4cqw)}.single .cl.lead b{font-size:max(22px,5.6cqw)}
+  .single .results h4{font-size:15px}.single .results h5{font-size:17px}
+  .single .pg .pill{font-size:14px}
+  .single .pg.flow{overflow-y:auto;overscroll-behavior:contain;padding-bottom:7cqw}
+  .single .pg.flow .folio{position:static;margin-top:5cqw}
+  .single .pg.flow .box{margin-top:4cqw}
+  .single .backc p{font-size:15px;max-width:100%}
+}
+@container (max-height:700px){.rows .d{-webkit-line-clamp:1}.rows li{padding:1.4cqw 0}.api li{padding:1.1cqw 0}.toc button{padding:1.6cqw 0}}
+@container (max-height:560px){.rows .by{display:none}}
+@media (max-width:380px){.controls{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto}.bar select{padding-left:9px;padding-right:28px;background-position:right 9px center}}
 @media (prefers-reduced-motion:reduce){.book,.leaf,.single .leaf,.single .leaf.flipped{transition:none!important}}
-@media (max-width:760px){.brand small,.issue-l{display:none}.bar{justify-content:center}}
+@media (max-width:760px){.brand small,.issue-l{display:none}}
 </style>
 </head>
 <body>
@@ -171,9 +219,11 @@ img.broken{visibility:hidden}
     <select id="month" aria-label="Month"></select>
     <select id="year" aria-label="Year"></select>
     <button id="loadIssue" type="button">Open</button>
+    <div class="pager" id="pager">
     <button id="prev" type="button" aria-label="Previous page"><svg class="chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Prev</button>
     <span id="where" aria-live="polite">Cover</span>
     <button id="next" type="button" class="primary" aria-label="Next page">Next<svg class="chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
   </div>
 </header>
 
@@ -212,7 +262,7 @@ const store = {
   set(k,v){ try { localStorage.setItem(k,v); } catch {} },
   del(k){ try { localStorage.removeItem(k); } catch {} }
 };
-const mq = matchMedia('(max-width: 760px)');
+const mq = matchMedia('(max-width: 760px), (orientation: portrait) and (max-width: 1100px)');
 let key = store.get('shelf-key') || '';
 let pages = [], leaves = [], c = 0, pi = 0, single = false, data = null, lastDate = '', cleanup = 0, swiped = false;
 
@@ -299,7 +349,7 @@ function buildPages(d, ym) {
     <div class="cov-foot"><span>${lists.length} monthly lists · ${total} books inside</span><span>Data provided by The New York Times</span></div>
   </div>`);
 
-  P.push(`<div class="pg">${run('Contents', issue)}
+  P.push(`<div class="pg flow">${run('Contents', issue)}
     <h2 class="pg-h">In this issue</h2>
     <p class="deck">The ${lists.length} New York Times monthly Best Sellers lists ${esc(asOf)}.</p>
     <ul class="toc">
@@ -308,7 +358,7 @@ function buildPages(d, ym) {
       <li><button type="button" class="xtra" data-go="${searchPg}"><span>Look up an author</span><i></i><b>${searchPg}</b></button></li>
     </ul>${folio(1)}</div>`);
 
-  P.push(`<div class="pg">${run('Behind the issue', issue)}
+  P.push(`<div class="pg flow">${run('Behind the issue', issue)}
     <h2 class="pg-h">What the Books API gives you, free</h2>
     <p class="deck">Six read-only endpoints. This magazine uses three of them.</p>
     <ul class="api">
@@ -359,7 +409,7 @@ function buildPages(d, ym) {
     <div class="results" id="results" aria-live="polite"><p class="muted">Try someone from this month's cover, like ${esc(top.author)}. Each search uses two requests.</p></div>
     ${folio(searchPg)}</div>`);
 
-  P.push(`<div class="pg">${run('Colophon', issue)}
+  P.push(`<div class="pg flow">${run('Colophon', issue)}
     <h2 class="pg-h">How this magazine is made</h2>
     <p class="deck">One HTML file, one call to the Times per month, and a little CSS 3D to turn the pages.</p>
     <p>When you pick a month, the page asks <b>/lists/full-overview.json</b> for the last day of that month${HOSTED ? ' through the magazine\'s own small server, which holds the key and keeps a copy of each answer' : ' with your key'}, keeps only the lists the Times marks as monthly, and lays each one out as a spread. Issues are also kept in your browser, so turning pages costs nothing.</p>
@@ -380,9 +430,20 @@ function buildPages(d, ym) {
   return P;
 }
 
+function fit() {
+  if (!single || book.hidden) { book.style.width = book.style.height = ''; return; }
+  const availH = innerHeight - $('.bar').offsetHeight - $('#pager').offsetHeight - 28;
+  let W = Math.min(book.parentElement.clientWidth - 20, 680), H = Math.max(360, availH);
+  if (H > W * 1.75) H = W * 1.75;          // don't let the page get absurdly tall
+  if (W > H / 1.12) W = H / 1.12;          // or too wide on short screens
+  book.style.width = Math.round(W) + 'px'; book.style.height = Math.round(H) + 'px';
+}
+addEventListener('resize', () => { if (single) fit(); });
+
 function render() {
   single = mq.matches;
   book.classList.toggle('single', single);
+  fit();
   const groups = [];
   if (single) pages.forEach(p => groups.push([p, BLANK]));
   else for (let i = 0; i < pages.length; i += 2) groups.push([pages[i], pages[i+1] || BLANK]);
@@ -396,6 +457,7 @@ function apply(moving = []) {
   const L = leaves.length;
   leaves.forEach((lf, j) => {
     lf.classList.toggle('flipped', j < c);
+    lf.classList.toggle('top', j === c || j === c - 1 || moving.includes(lf));
     if (!moving.includes(lf)) lf.style.zIndex = j < c ? j + 1 : L - j;
   });
   book.classList.toggle('closed', !single && c === 0);
@@ -434,7 +496,8 @@ function show(which, text, retry) {
   setup.hidden = which !== 'setup';
   msg.hidden = which !== 'msg';
   book.hidden = which !== 'book';
-  $('#prev').hidden = $('#next').hidden = $('#where').hidden = which !== 'book';
+  $('#pager').hidden = which !== 'book';
+  if (which === 'book') requestAnimationFrame(fit);
   if (which === 'msg') { $('#msgText').textContent = text; $('#retry').hidden = !retry; }
 }
 
