@@ -60,6 +60,10 @@ button.primary{background:var(--mustard)!important;border-color:var(--mustard)!i
 .leaf.flipped{transform:rotateY(-180deg)}
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper);color:var(--ink);container-type:size;cursor:pointer}
 .leaf.top .face{box-shadow:0 6px 22px #00000080}
+.leaf:not(.top){visibility:hidden}
+.leaf{-webkit-transform-style:preserve-3d}
+.face{-webkit-transform:translateZ(.1px)}
+.back{-webkit-transform:rotateY(180deg) translateZ(.1px)}
 .pager{display:contents}
 .face::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.1;mix-blend-mode:multiply;pointer-events:none;z-index:3}
 .back{transform:rotateY(180deg)}
@@ -453,11 +457,12 @@ function render() {
   apply();
 }
 
-function apply(moving = []) {
+function apply(moving = [], keep = []) {
   const L = leaves.length;
   leaves.forEach((lf, j) => {
     lf.classList.toggle('flipped', j < c);
-    lf.classList.toggle('top', j === c || j === c - 1 || moving.includes(lf));
+    // only the visible pages (and any mid-turn) are rendered: iOS Safari ignores z-index between flat 3D layers
+    lf.classList.toggle('top', j === c || j === c - 1 || moving.includes(lf) || keep.includes(lf));
     if (!moving.includes(lf)) lf.style.zIndex = j < c ? j + 1 : L - j;
   });
   book.classList.toggle('closed', !single && c === 0);
@@ -478,6 +483,7 @@ function go(nc) {
   clearTimeout(cleanup);
   leaves.forEach(lf => { lf.style.transitionDelay = ''; });
   const fwd = nc > c;
+  const keep = leaves.filter(lf => lf.classList.contains('top')); // stay visible until the turn lands
   const moving = leaves.slice(Math.min(c, nc), Math.max(c, nc));
   if (!fwd) moving.reverse();
   moving.forEach((lf, k) => {
@@ -487,7 +493,7 @@ function go(nc) {
   });
   c = nc;
   pi = single ? c : Math.max(0, 2*c - 1);
-  apply(moving);
+  apply(moving, keep);
   cleanup = setTimeout(() => { leaves.forEach(lf => { lf.style.transitionDelay = ''; }); apply(); }, 1000 + moving.length * 70);
 }
 const goPage = p => go(single ? p : Math.ceil(p / 2));
