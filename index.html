@@ -197,7 +197,11 @@ img.broken{visibility:hidden}
 <script>
 {
 const HOSTED = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-const BASE = HOSTED ? '/api' : 'https://api.nytimes.com/svc/books/v3';
+// The Worker that holds the key. On workers.dev the page and API share an address;
+// elsewhere (GitHub Pages at nytbook.roshnisubudhi.com) the page calls the Worker directly.
+const WORKER = 'https://nytbooks.aibicidiei6.workers.dev';
+const BASE = !HOSTED ? 'https://api.nytimes.com/svc/books/v3'
+  : location.hostname.endsWith('.workers.dev') ? '/api' : WORKER + '/api';
 const $ = s => document.querySelector(s);
 const book = $('#book'), setup = $('#setup'), msg = $('#msg');
 const store = {

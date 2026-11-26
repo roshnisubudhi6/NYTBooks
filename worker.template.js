@@ -15,18 +15,25 @@ const ROUTES = {
 };
 const PARAMS = ['published_date', 'author', 'title', 'isbn', 'offset'];
 const memory = new Map();
+// Sites allowed to call this API from the browser (the page on workers.dev needs no entry).
+const ALLOWED_ORIGINS = ['https://nytbook.roshnisubudhi.com', 'https://roshnisubudhi6.github.io'];
+let cors = {};
 
 const json = (body, status, ttl) => new Response(body, {
   status,
   headers: {
     'content-type': 'application/json; charset=utf-8',
     'cache-control': ttl ? `public, max-age=${Math.min(ttl, 3600)}` : 'no-store',
+    ...cors,
   },
 });
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const origin = request.headers.get('origin') || '';
+    cors = ALLOWED_ORIGINS.includes(origin) ? { 'access-control-allow-origin': origin, vary: 'Origin' } : {};
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...cors, 'access-control-allow-methods': 'GET', 'access-control-max-age': '86400' } });
 
     if (!url.pathname.startsWith('/api/')) {
       return new Response(PAGE, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300' } });
